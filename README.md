@@ -72,30 +72,12 @@ To quantify the "Perceived Epistemic Certainty", each excerpt is analyzed using 
 
 Table 1: Epistemic Commitment Evaluation Parameters (Score 0-100)
 
-Theoretical Category
-Linguistic Marker
-Penalty
-Theoretical Justification (For the Paper)
-Hedges
-"Maybe", "I think", "I don't know"
--15
-Deliberate reduction of truth value (Hyland, 2005).
-Reformulation
-Truncation or self-correction (word-)
--10
-Abandonment of uncertain planning route (Marcuschi, 2001).
-Filled Pauses
-"uh", "um", "eh", "ééé", "ahn"
--5
-Monitoring and term-searching markers (Marcuschi, 2001).
-Elongation
-Vowel stretching (::)
--5
-Hesitation-induced loss of linearity (Marcuschi, 2001).
-Repetition
-"the the", "that that"
--5
-Syntactic progression difficulty (Marcuschi, 2001).
+| Atenuadores (Hedges) | "Talvez", "Acho que", "Sei lá" | -15 | Redução deliberada do valor de verdade (Hyland, 2005). |
+| Reformulação | Truncamento ou autocorreção | -10 | Abandono de rota incerta no planeamento (Marcuschi, 2001). |
+| Pausa Preenchida | "ééé", "hum", "ahn" | -5 | Marca de monitorização e busca de termo (Marcuschi, 2001). |
+| Alongamento | "de::", "para::" | -5 | Quebra de linearidade por hesitação (Marcuschi, 2001). |
+| Repetição | "o o o", "que que" | -5 | Dificuldade na progressão sintática (Marcuschi, 2001). |
+
 
 81 to 100 pts - Categorical Assertiveness: The speaker is confident; almost no hesitation. (e.g., "Article 142 is unconstitutional.")
 
