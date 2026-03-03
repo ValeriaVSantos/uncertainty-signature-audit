@@ -1,8 +1,8 @@
-#The Uncertainty Signature: Auditing LLM Calibration through Pragmatic Markers
+The Uncertainty Signature: Auditing LLM Calibration through Pragmatic Markers
 
 This repository contains the auditing framework developed to analyze how the suppression of pragmatic markers (hesitations, fillers, and hedges) affects the reliability and calibration of Large Language Models (LLMs).
 
-#Research Objective
+Research Objective
 
 The core of this project is to investigate the correlation between the "cleaning" or "sanitization" of spoken language transcripts—specifically from the Roda Viva Corpus (Brazilian Portuguese)—and the emergence of Overconfidence Hallucinations in models like Llama-3 and GPT-4.
 
@@ -30,7 +30,7 @@ uh / um / eh Filled pauses (monitoring markers).
 
 - Truncation or sudden reformulation.
 
-📊 Empirical Audit: Llama 3.1 Results
+Empirical Audit: Llama 3.1 Results
 
 The first technical audit was performed using the Meta-Llama-3.1-8B-Instruct model to measure its sensitivity to the Jeffersonian markers listed above.
 
