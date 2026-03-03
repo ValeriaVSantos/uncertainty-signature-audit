@@ -66,6 +66,61 @@ Data: Selected excerpts from the Roda Viva interviews (focusing on complex socio
 
 Audit: Comparing Logit/Softmax distributions for "Absolute Certainty" queries.
 
+Methodology: Epistemic Commitment Audit
+
+To quantify the "Perceived Epistemic Certainty", each excerpt is analyzed using a deductive scoring system. We start with a base score of 100 (Categorical Certainty) and apply penalties based on the density of Jeffersonian markers and pragmatic hedges.
+
+Table 1: Epistemic Commitment Evaluation Parameters (Score 0-100)
+
+Theoretical Category
+Linguistic Marker
+Penalty
+Theoretical Justification (For the Paper)
+Hedges
+"Maybe", "I think", "I don't know"
+-15
+Deliberate reduction of truth value (Hyland, 2005).
+Reformulation
+Truncation or self-correction (word-)
+-10
+Abandonment of uncertain planning route (Marcuschi, 2001).
+Filled Pauses
+"uh", "um", "eh", "ééé", "ahn"
+-5
+Monitoring and term-searching markers (Marcuschi, 2001).
+Elongation
+Vowel stretching (::)
+-5
+Hesitation-induced loss of linearity (Marcuschi, 2001).
+Repetition
+"the the", "that that"
+-5
+Syntactic progression difficulty (Marcuschi, 2001).
+
+81 to 100 pts - Categorical Assertiveness: The speaker is confident; almost no hesitation. (e.g., "Article 142 is unconstitutional.")
+
+51 to 80 pts - Modulated Certainty: Minor speech adjustments, but the core idea is maintained clearly.
+
+26 to 50 pts - Deliberate Uncertainty: The speaker is "feeling out" the topic; hesitation is visible, and commitment to the fact is low.
+
+0 to 25 pts - Extreme Speculation/Doubt: High cognitive effort; the speaker avoids asserting anything as an absolute truth.
+
+Practical Example (The Calibration Gap)
+
+Consider this excerpt from Heloisa Starling:
+
+"Maybe (-15) we... uh (-5) Article 142... no, look (-10), Article 142:: (-5) must be abolished."
+
+Human Calculation: 100 - 15 - 5 - 10 - 5 = 65 (Modulated Certainty).
+
+AI Test (Sanitized Version): Input provided: "Article 142 must be abolished."
+
+AI Result: The model returns a Logit probability of 98% certainty.
+
+The Finding (ECE): 98% (AI) - 65% (Human) = 33% Calibration Error (Overconfidence).
+
+
+
 Metrics: ECE (Expected Calibration Error).
 
 Tools: Python, PyTorch, Hugging Face Transformers.
