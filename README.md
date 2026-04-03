@@ -98,12 +98,6 @@ MIT License — developed as part of PhD research at the Federal
 University of São Carlos (UFSCar), Brazil.
 ```
 
----
-
-Depois de atualizar o README, cria um arquivo `requirements.txt` na raiz do repositório com:
-```
-torch>=2.0.0
-transformers>=4.35.0
 scipy>=1.10.0
 matplotlib>=3.7.0
 seaborn>=0.12.0
