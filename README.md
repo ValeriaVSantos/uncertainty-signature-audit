@@ -1,110 +1,111 @@
-The Uncertainty Signature: Auditing LLM Calibration through Pragmatic Markers
+# Uncertainty Signature Audit
 
-This repository contains the auditing framework developed to analyze how the suppression of pragmatic markers (hesitations, fillers, and hedges) affects the reliability and calibration of Large Language Models (LLMs).
+**Speech Disfluencies and LLM Calibration: Auditing Probabilistic 
+Overconfidence through Pragmatic Markers in Spontaneous Speech**
 
-Research Objective
+This repository contains the experimental framework developed to 
+investigate how the suppression of pragmatic markers (hesitations, 
+fillers, and hedges) affects the probabilistic calibration of Large 
+Language Models (LLMs).
 
-The core of this project is to investigate the correlation between the "cleaning" or "sanitization" of spoken language transcripts—specifically from the Roda Viva Corpus (Brazilian Portuguese)—and the emergence of Overconfidence Hallucinations in models like Llama-3 and GPT-4.
+## Research Overview
 
-By removing human hesitation, we hypothesize that LLMs are forced into a state of categorical certainty that does not reflect the speaker's original epistemic stance.
+This project introduces the concept of **pragmatic blindness** — 
+the systematic failure of LLMs to process oral planning markers as 
+epistemic uncertainty signals — and provides empirical evidence 
+through a calibration audit on the Roda Viva Corpus (Brazilian 
+Portuguese).
 
-Theoretical Framework
+A paper based on this work has been submitted to the **2nd Joint 
+Workshop on Discourse and Dialogue (CODI-CRAC 2026)**, co-located 
+with ACL 2026 (under review).
 
-This interdisciplinary framework bridges Linguistics and AI Safety:
+## Key Findings
 
-Text Linguistics: Syntax of planning and monitoring (Marcuschi, 2001).
+- **Dataset:** 344 contrastive turns from the Roda Viva corpus 
+  (3 interviews: Heloísa Starling, Marco Aurélio Mello, Galvão Bueno)
+- **Model:** Meta-Llama-3.1-8B-Instruct (4-bit quantization)
+- **ECE:** Layer A (Faithful) = 41.95 | Layer B (Sanitized) = 41.14
+- **OE:** Layer A = 4.29 | Layer B = 3.31
+- **Wilcoxon test:** W = 10988.50, p = 0.0023
+- **Spearman correlation:** ρ = −0.49 (faithful), ρ = −0.43 (sanitized)
 
-Pragmatics: Interpersonal metadiscourse and Hedges (Hyland, 2005).
+## Epistemic Commitment Annotation Matrix
 
-AI Safety/Machine Learning: Calibration of neural networks and Expected Calibration Error (Guo et al., 2017).
+| Category | Marker | Example | Points | Theoretical Basis |
+|---|---|---|---|---|
+| Epistemic Hedges | Lexical hedges | maybe, I think, seems | −15 | Epistemic retreat (Hyland, 2005) |
+| Reformulations | False starts | has to end... rewrite | −10 | Syntactic abandonment (Marcuschi, 2003) |
+| Filled Pauses | Hesitation vocalizations | uh..., um... | −5 | Macrostructural planning marker |
+| Lengthenings | Vowel prolongation | veryyy, forrrr | −5 | Lexical selection in progress |
+| Repetitions | Term repetition | that that, but but | −5 | Rhythmic hesitation |
 
-Transcription Protocol (Adapted Jeffersonian Notation)
+## Repository Structure
+```
+/data
+    pilot_benchmark.csv     # 344-turn contrastive dataset
+/notebooks
+    02_llm_probabilistic_audit.ipynb  # Logit extraction and ECE/OE pipeline
+/results
+    final_audit_results.csv  # AI confidence scores per turn
+    calibration_plot.png     # Reliability Diagram
+/src
+    audit_pipeline.py        # Main pipeline script
+/docs
+    annotation_guide.md      # Epistemic commitment annotation protocol
+```
 
-For uncertainty analysis, we preserve the following markers to capture the speaker's "uncertainty signature":
+## Methodology
 
-:: Vowel elongation (indicates lexical search).
+The experiment contrasts two transcription conditions:
 
-(.) Micropause (indicates syntactic planning).
+- **Layer A (Faithful):** Jeffersonian conventions preserved — 
+  micropauses `(.)`, lengthenings `(::)`, truncations, filled pauses
+- **Layer B (Sanitized):** disfluency markers suppressed, 
+  approximating written standard norms
 
-uh / um / eh Filled pauses (monitoring markers).
+Model confidence was extracted via Softmax on the YES token logit 
+for the binary prompt: *"Based strictly on the text, does the 
+speaker express absolute conviction about the information? 
+Answer only YES or NO."*
 
-- Truncation or sudden reformulation.
+## Tech Stack
 
-Empirical Audit: Llama 3.1 Results
+- Python (PyTorch, Hugging Face Transformers)
+- Meta-Llama-3.1-8B-Instruct (4-bit quantization)
+- SciPy (Wilcoxon, Spearman)
+- Matplotlib, Seaborn
 
-The first technical audit was performed using the Meta-Llama-3.1-8B-Instruct model to measure its sensitivity to the Jeffersonian markers listed above.
+## Citation
 
-Key Findings
+If you use this work, please cite:
+```
+Santos, V. V. (2026). Speech Disfluencies and LLM Calibration: 
+A Pilot Study on the Effects of Textual Sanitization in 
+Brazilian Portuguese. Submitted to CODI-CRAC 2026 (ACL Workshop).
+```
 
-Model: Llama-3.1-8B-Instruct (4-bit quantization).
+## References
 
-Dataset: 95 sanitized vs. pragmatic-rich excerpts from the Heloisa Starling interview.
+- Marcuschi, L. A. (2003). *Análise da Conversação*. Ática.
+- Hyland, K. (2005). *Metadiscourse*. Continuum.
+- Guo et al. (2017). On Calibration of Modern Neural Networks. ICML.
+- Vale et al. (2024). Roda Viva Corpus. PROPOR 2024.
 
-Expected Calibration Error (ECE): 52.88%.
+## License
 
-Analysis: The high ECE score indicates significant miscalibration. The model consistently assigns high confidence (overconfidence) to statements that humans, guided by pragmatic markers, identify as hesitant or uncertain. This suggests that LLMs "blindly" process sanitized text, ignoring the epistemic nuances preserved by the Jeffersonian notation.
+MIT License — developed as part of PhD research at the Federal 
+University of São Carlos (UFSCar), Brazil.
+```
 
-Repository Structure
+---
 
-/data:
-
-pilot_benchmark.csv: The primary dataset (95 rows) with human ground-truth scores.
-
-/notebooks:
-
-02_llm_probabilistic_audit.ipynb: Python pipeline for logit extraction and ECE calculation.
-
-/results:
-
-final_audit_results.csv: Audit output including AI confidence scores.
-
-calibration_plot.png: Reliability Diagram showing the gap between human perception and AI confidence.
-
-Methodology & Tech Stack
-
-Data: Selected excerpts from the Roda Viva interviews (focusing on complex socio-political discourse).
-
-Audit: Comparing Logit/Softmax distributions for "Absolute Certainty" queries.
-
-Methodology: Epistemic Commitment Audit
-
-To quantify the "Perceived Epistemic Certainty", each excerpt is analyzed using a deductive scoring system. We start with a base score of 100 (Categorical Certainty) and apply penalties based on the density of Jeffersonian markers and pragmatic hedges.
-
-Table 1: Epistemic Commitment Evaluation Parameters (Score 0-100)
-
-| Atenuadores (Hedges) | "Talvez", "Acho que", "Sei lá" | -15 | Redução deliberada do valor de verdade (Hyland, 2005). |
-| Reformulação | Truncamento ou autocorreção | -10 | Abandono de rota incerta no planeamento (Marcuschi, 2001). |
-| Pausa Preenchida | "ééé", "hum", "ahn" | -5 | Marca de monitorização e busca de termo (Marcuschi, 2001). |
-| Alongamento | "de::", "para::" | -5 | Quebra de linearidade por hesitação (Marcuschi, 2001). |
-| Repetição | "o o o", "que que" | -5 | Dificuldade na progressão sintática (Marcuschi, 2001). |
-
-
-81 to 100 pts - Categorical Assertiveness: The speaker is confident; almost no hesitation. (e.g., "Article 142 is unconstitutional.")
-
-51 to 80 pts - Modulated Certainty: Minor speech adjustments, but the core idea is maintained clearly.
-
-26 to 50 pts - Deliberate Uncertainty: The speaker is "feeling out" the topic; hesitation is visible, and commitment to the fact is low.
-
-0 to 25 pts - Extreme Speculation/Doubt: High cognitive effort; the speaker avoids asserting anything as an absolute truth.
-
-Practical Example (The Calibration Gap)
-
-Consider this excerpt from Heloisa Starling:
-
-"Maybe (-15) we... uh (-5) Article 142... no, look (-10), Article 142:: (-5) must be abolished."
-
-Human Calculation: 100 - 15 - 5 - 10 - 5 = 65 (Modulated Certainty).
-
-AI Test (Sanitized Version): Input provided: "Article 142 must be abolished."
-
-AI Result: The model returns a Logit probability of 98% certainty.
-
-The Finding (ECE): 98% (AI) - 65% (Human) = 33% Calibration Error (Overconfidence).
-
-
-
-Metrics: ECE (Expected Calibration Error).
-
-Tools: Python, PyTorch, Hugging Face Transformers.
-
-Developed as part of a PhD research project at the Federal University of São Carlos (UFSCar), Brazil.
+Depois de atualizar o README, cria um arquivo `requirements.txt` na raiz do repositório com:
+```
+torch>=2.0.0
+transformers>=4.35.0
+scipy>=1.10.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+pandas>=2.0.0
+numpy>=1.24.0
