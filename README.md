@@ -1,105 +1,119 @@
-# Uncertainty Signature Audit
+# Speech Disfluencies and LLM Confidence
 
-**Speech Disfluencies and LLM Calibration: Auditing Probabilistic 
-Overconfidence through Pragmatic Markers in Spontaneous Speech**
+[![ACL Anthology](https://img.shields.io/badge/ACL%20Anthology-2026.codi--1.5-5b2c6f)](https://aclanthology.org/2026.codi-1.5/)
+[![DOI](https://img.shields.io/badge/DOI-10.18653%2Fv1%2F2026.codi--1.5-blue)](https://doi.org/10.18653/v1/2026.codi-1.5)
+[![License: MIT](https://img.shields.io/badge/Code%20License-MIT-green.svg)](LICENSE)
 
-This repository contains the experimental framework developed to 
-investigate how the suppression of pragmatic markers (hesitations, 
-fillers, and hedges) affects the probabilistic calibration of Large 
-Language Models (LLMs).
+Reproducibility materials for:
 
-## Research Overview
+> Valeria Santos. 2026. **Speech Disfluencies and LLM Confidence: Length Bias and Pragmatic Insensitivity in Brazilian Portuguese.** CODI-CRAC 2026, ACL. Pages 24-28.
 
-This project introduces the concept of **pragmatic blindness** — 
-the systematic failure of LLMs to process oral planning markers as 
-epistemic uncertainty signals — and provides empirical evidence 
-through a calibration audit on the Roda Viva Corpus (Brazilian 
-Portuguese).
+## Why this matters
 
-A paper based on this work has been submitted to the **2nd Joint 
-Workshop on Discourse and Dialogue (CODI-CRAC 2026)**, co-located 
-with ACL 2026 (under review).
+Confidence estimates can look precise while responding to superficial properties of an input. This study tests whether a language model responds to pragmatic uncertainty markers in spontaneous Brazilian Portuguese or primarily to surface features such as turn length.
 
-## Key Findings
+The central finding is **surface-feature dominance**: after controlling for turn length, disfluency and hedge effects move in the human-expected direction but remain much smaller than the length effect.
 
-- **Dataset:** 344 contrastive turns from the Roda Viva corpus 
-  (3 interviews: Heloísa Starling, Marco Aurélio Mello, Galvão Bueno)
-- **Model:** Meta-Llama-3.1-8B-Instruct (4-bit quantization)
-- **ECE:** Layer A (Faithful) = 41.95 | Layer B (Sanitized) = 41.14
-- **OE:** Layer A = 4.29 | Layer B = 3.31
-- **Wilcoxon test:** W = 10988.50, p = 0.0023
-- **Spearman correlation:** ρ = −0.49 (faithful), ρ = −0.43 (sanitized)
+## Study design
 
-## Epistemic Commitment Annotation Matrix
+- **Data:** 344 turns from three interviews in the Roda Viva corpus
+- **Contrast:** faithful Conversation Analysis transcripts versus sanitized transcripts
+- **Model:** Meta-Llama-3.1-8B-Instruct with 4-bit quantization
+- **Reference signal:** a deductive proxy of epistemic commitment based on pragmatic markers
+- **Analysis:** binned divergence measures, Spearman correlations, Wilcoxon test, and multivariate OLS regression
 
-| Category | Marker | Example | Points | Theoretical Basis |
-|---|---|---|---|---|
-| Epistemic Hedges | Lexical hedges | maybe, I think, seems | −15 | Epistemic retreat (Hyland, 2005) |
-| Reformulations | False starts | has to end... rewrite | −10 | Syntactic abandonment (Marcuschi, 2003) |
-| Filled Pauses | Hesitation vocalizations | uh..., um... | −5 | Macrostructural planning marker |
-| Lengthenings | Vowel prolongation | veryyy, forrrr | −5 | Lexical selection in progress |
-| Repetitions | Term repetition | that that, but but | −5 | Rhythmic hesitation |
+ECE and OE are used here as **divergence measures between model confidence and a discourse-pragmatic proxy**. They are not presented as classical factual-correctness calibration metrics.
 
-## Repository Structure
-```
-/data
-    pilot_benchmark.csv     # 344-turn contrastive dataset
-/notebooks
-    02_llm_probabilistic_audit.ipynb  # Logit extraction and ECE/OE pipeline
-/results
-    final_audit_results.csv  # AI confidence scores per turn
-    calibration_plot.png     # Reliability Diagram
-/src
-    audit_pipeline.py        # Main pipeline script
-/docs
-    annotation_guide.md      # Epistemic commitment annotation protocol
+## Main results
+
+| Result | Faithful layer | Sanitized layer |
+|---|---:|---:|
+| ECE-style divergence | 41.95 | 41.14 |
+| Overconfidence error | 4.29 | 3.31 |
+| Spearman correlation | -0.49 | -0.43 |
+
+The paired difference was significant in the reported Wilcoxon test (`W = 10988.50`, `p = 0.0023`). In the multivariate model, turn length was the only significant predictor (`beta_std = +14.47`, `p < 0.001`); oral disfluency markers and lexical hedges were not significant.
+
+See the [published paper](https://aclanthology.org/2026.codi-1.5/) for the full interpretation and limitations.
+
+## Repository structure
+
+```text
+.
+├── data/                 # Benchmark and source-derived research data
+├── docs/                 # Annotation and discourse-topic notes
+├── notebooks/            # Exploratory analyses and model audit notebooks
+├── results/              # Reported outputs and figures
+├── src/
+│   └── ece_calibration_pipeline.py
+├── tests/                # Tests for the reusable metric code
+├── CITATION.cff
+└── requirements.txt
 ```
 
-## Methodology
+## Quick start
 
-The experiment contrasts two transcription conditions:
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python src/ece_calibration_pipeline.py \
+  --input "results/reported_confidence_scores.csv" \
+  --output "results/reliability_diagram_reproduced.png"
+python -m unittest discover -s tests -v
+```
 
-- **Layer A (Faithful):** Jeffersonian conventions preserved — 
-  micropauses `(.)`, lengthenings `(::)`, truncations, filled pauses
-- **Layer B (Sanitized):** disfluency markers suppressed, 
-  approximating written standard norms
+The notebooks document the exploratory model-inference workflow. Re-running Llama inference requires access to the model weights and hardware compatible with the quantized setup described in the paper.
 
-Model confidence was extracted via Softmax on the YES token logit 
-for the binary prompt: *"Based strictly on the text, does the 
-speaker express absolute conviction about the information? 
-Answer only YES or NO."*
+The command above uses the complete 344-turn result table. The shorter 95-turn CSV and Colab-oriented scripts are retained only as pilot-stage provenance.
 
-## Tech Stack
+## Annotation proxy
 
-- Python (PyTorch, Hugging Face Transformers)
-- Meta-Llama-3.1-8B-Instruct (4-bit quantization)
-- SciPy (Wilcoxon, Spearman)
-- Matplotlib, Seaborn
+The epistemic-commitment proxy starts at 100 and applies hierarchical deductions:
+
+| Category | Example | Deduction |
+|---|---|---:|
+| Epistemic hedge | “maybe”, “I think” | -15 |
+| Reformulation / false start | abandoned construction | -10 |
+| Filled pause | “uh”, “um” | -5 |
+| Lengthening | prolonged vowel | -5 |
+| Repetition | repeated word or connective | -5 |
+
+This proxy is theory-driven and was annotated by one researcher. It should not be interpreted as a direct measurement of a speaker's internal mental state.
+
+## Data and ethics
+
+The study uses interviews with public figures from the [Roda Viva corpus](https://github.com/LeGOS-UFSCar/Roda-Viva). The repository contains research derivatives used for the audit. Users should consult the upstream corpus terms before redistributing transcript content.
+
+## Limitations
+
+- The benchmark contains 344 turns from one interview genre.
+- The experiment uses one autoregressive model.
+- The reference proxy was developed deductively and annotated by one researcher.
+- The regression explains approximately 29% of the confidence variance.
+- The results do not establish factual correctness or a general psychological measure of certainty.
 
 ## Citation
 
-If you use this work, please cite:
-```
-Santos, V. V. (2026). Speech Disfluencies and LLM Calibration: 
-A Pilot Study on the Effects of Textual Sanitization in 
-Brazilian Portuguese. Submitted to CODI-CRAC 2026 (ACL Workshop).
+```bibtex
+@inproceedings{santos-2026-speech,
+  title     = {Speech Disfluencies and {LLM} Confidence: Length Bias and Pragmatic Insensitivity in {B}razilian {P}ortuguese},
+  author    = {Santos, Valeria},
+  booktitle = {Proceedings of the 2nd Joint Workshop on Computational Approaches to Discourse, Context and Document-Level Inferences and Computational Models of Reference, Anaphora and Coreference (CODI-CRAC 2026)},
+  pages     = {24--28},
+  year      = {2026},
+  publisher = {Association for Computational Linguistics},
+  url       = {https://aclanthology.org/2026.codi-1.5/},
+  doi       = {10.18653/v1/2026.codi-1.5}
+}
 ```
 
-## References
+## Author
 
-- Marcuschi, L. A. (2003). *Análise da Conversação*. Ática.
-- Hyland, K. (2005). *Metadiscourse*. Continuum.
-- Guo et al. (2017). On Calibration of Modern Neural Networks. ICML.
-- Vale et al. (2024). Roda Viva Corpus. PROPOR 2024.
+**Valeria Vieira dos Santos**<br>
+Federal University of Sao Carlos (UFSCar), Brazil<br>
+[ORCID](https://orcid.org/0009-0006-0023-6736) · [Website](https://valeriavsantos.com) · [LinkedIn](https://www.linkedin.com/in/valeriavieira-/)
 
 ## License
 
-MIT License — developed as part of PhD research at the Federal 
-University of São Carlos (UFSCar), Brazil.
-```
-
-scipy>=1.10.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
-pandas>=2.0.0
-numpy>=1.24.0
+Code is released under the [MIT License](LICENSE). Source-derived linguistic data may be subject to the terms of the upstream Roda Viva corpus.
